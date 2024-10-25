@@ -12,27 +12,31 @@ public class MyBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        Long chatId = update.getMessage().getChatId();
-        if(chatId.equals(1007690054L)){
-            SendMessage sendMessage = new SendMessage(String.valueOf(chatId), "Uzr siz uchun dasturimiz faoliyat ko'rsatmaydi!");
-            try {
-                execute(sendMessage);
-                return;
-            } catch (TelegramApiException e) {
-                throw new RuntimeException(e);
+        String pupilId = String.valueOf(0L);
+        String adminId = String.valueOf(0L);
+        String userId = String.valueOf(update.getMessage().getChatId());
+        String sendText = update.getMessage().getText();
+
+        System.out.println(update.getMessage().getChatId() + " | " + update.getMessage().getText());
+
+        SendMessage sendMessage = new SendMessage();
+        if (sendText.equals("/start")) {
+            sendMessage.setChatId(userId);
+            sendMessage.setText("Assalom alaykum botimizga x .... admin uchun xabarizni yuboring!");
+        } else {
+            sendMessage.setText(sendText);
+            if (userId.equals(pupilId)) {
+                sendMessage.setChatId(adminId);
+            } else if (userId.equals(adminId)) {
+                sendMessage.setChatId(pupilId);
             }
         }
 
-        String message = update.getMessage().getText();
-        System.out.println(chatId + " chat id li foydalanuvchi ushbu " + message + " ni yubordi!");
-        String welcomeText = "Assalom alaykum bizni uenter botimizga xush kelibsiz!";
-        if (message.equals("/start")){
-            SendMessage sendMessage = new SendMessage(String.valueOf(chatId), welcomeText);
-            try {
-                execute(sendMessage);
-            } catch (TelegramApiException e) {
-                throw new RuntimeException(e);
-            }
+
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
         }
     }
 
