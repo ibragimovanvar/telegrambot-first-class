@@ -5,38 +5,29 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MyBot extends TelegramLongPollingBot {
     public MyBot(String botToken) {
         super(botToken);
     }
 
+    List<String> messages = new ArrayList<>();
+
     @Override
     public void onUpdateReceived(Update update) {
-        String pupilId = String.valueOf(0L);
-        String adminId = String.valueOf(0L);
-        String userId = String.valueOf(update.getMessage().getChatId());
-        String sendText = update.getMessage().getText();
-
-        System.out.println(update.getMessage().getChatId() + " | " + update.getMessage().getText());
-
-        SendMessage sendMessage = new SendMessage();
-        if (sendText.equals("/start")) {
-            sendMessage.setChatId(userId);
-            sendMessage.setText("Assalom alaykum botimizga x .... admin uchun xabarizni yuboring!");
-        } else {
-            sendMessage.setText(sendText);
-            if (userId.equals(pupilId)) {
-                sendMessage.setChatId(adminId);
-            } else if (userId.equals(adminId)) {
-                sendMessage.setChatId(pupilId);
+        String text = update.getMessage().getText();
+        if(text.equals("/show")){
+            int i = 1;
+            for (String message : messages) {
+                System.out.println(i + ". " + message);
+                i++;
             }
-        }
-
-
-        try {
-            execute(sendMessage);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+        }else if(text.equals("/clear")){
+            messages.clear();
+        }else{
+            messages.add(text);
         }
     }
 
